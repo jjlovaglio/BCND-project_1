@@ -82,9 +82,15 @@ class Blockchain {
                     blockObj.previousBlockHash = previousBlock.hash;
                 } 
                 // push the object to the chain's array property
-                this.chain.push(blockObj);
+                self.chain.push(blockObj);
                 // update the chain's height property
-                this.height = blockObj.height;
+                self.height = blockObj.height;
+                // validate the chain
+                const errorLog = await self.validateChain();
+                if (errorLog.length !== 0) {
+                    resolve({message: "Blockchain is invalid", error: errorLog, status: false});
+                }
+                console.log("number of errors (errorLog): ", errorLog);
                 // resolve by returning the block object
                 resolve(blockObj);
            } catch(err){
@@ -207,7 +213,7 @@ class Blockchain {
                     // and if the star owner is equal to the supplied address
                     if (object.owner === address) {
                         // push the star to the stars array
-                        stars.push(object.star);
+                        stars.push(object);
                     }
                 }
             });
@@ -245,7 +251,7 @@ class Blockchain {
                 }
             });
             // finally, resolve with the errorLog array
-            resolve(erroLog);
+            resolve(errorLog);
         });
     }
 
